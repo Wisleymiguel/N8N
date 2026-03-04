@@ -3,35 +3,25 @@
   "nodes": [
     {
       "parameters": {
-        "url": "https://pokeapi.co/api/v2/pokemon",
+        "url": "https://pokeapi.co/api/v2/pokemon?limit=100",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        208,
+        176,
         0
       ],
       "id": "03e77675-c30b-4e81-9999-9bc1e012be82",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "3a51030f-4e05-46b0-a052-745107807810",
-      "name": "Executar teste"
+      "name": "HTTP Request",
+      "executeOnce": true
     },
     {
       "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0",
+          "value": "Bearer {{GROQ_API_KEY}}",
           "mode": "list",
           "cachedResultName": "teste N8N",
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0/edit?usp=drivesdk"
@@ -82,11 +72,12 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        608,
+        528,
         0
       ],
       "id": "674ed92b-a333-4507-8b98-a7e6215bd9e3",
       "name": "Append row in sheet",
+      "executeOnce": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "R7eJctFvUeUG8VW8",
@@ -102,26 +93,65 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        432,
+        352,
         0
       ],
       "id": "08d6f4fd-3768-420b-9e6f-ada3849c938e",
-      "name": "Split Out"
+      "name": "Split Out",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "32d6eac2-627f-4d97-a1c8-06765691a023",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{GROQ_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Recebi 100 pokémons da PokeAPI e salvei no Google Sheets. Gere um resumo curto confirmando que tudo ocorreu com sucesso.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        736,
+        0
+      ],
+      "id": "a8ea623d-d33e-4126-8d9f-489384a30a86",
+      "name": "HTTP Request1",
+      "executeOnce": true
     }
   ],
   "pinData": {},
   "connections": {
-    "Executar teste": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "HTTP Request": {
       "main": [
         [
@@ -143,6 +173,17 @@
           }
         ]
       ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -151,7 +192,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "a6c292dd-b1d4-4a49-9971-1954e9c198ce",
+  "versionId": "4f8fc478-97d0-4907-80d6-f9ed270c9b91",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "9dda3a79d38057bef830823f2081d6c4296828e0916a912a19f8fa72ec445665"
