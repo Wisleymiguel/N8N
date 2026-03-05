@@ -1,0 +1,305 @@
+{
+  "name": "PokeAPI → Sheets com IA",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {},
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        224
+      ],
+      "id": "32d6eac2-627f-4d97-a1c8-06765691a023",
+      "name": "Agendamento (1 min)",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://pokeapi.co/api/v2/pokemon?limit=100",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -32,
+        224
+      ],
+      "id": "03e77675-c30b-4e81-9999-9bc1e012be82",
+      "name": "Buscar Pokémons",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        192,
+        224
+      ],
+      "id": "08d6f4fd-3768-420b-9e6f-ada3849c938e",
+      "name": "Separar Itens",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "57c60b2d-04e1-4d51-9265-d8881c2313cc",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "p",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        224
+      ],
+      "id": "bd63d6f4-01ad-4ec7-9a71-6e1606587393",
+      "name": "Filtrar por letra",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0",
+          "mode": "list",
+          "cachedResultName": "teste N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0/edit#gid=0"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        224
+      ],
+      "id": "e56866c2-a27d-429b-b7ee-b10e93751b99",
+      "name": "Limpar Planilha",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "R7eJctFvUeUG8VW8",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0",
+          "mode": "list",
+          "cachedResultName": "teste N8N",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1s9H9wfysh3kybj4lAbWNgJIq_M1hoasNnEbbSRc1gz0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "url": "={{ $json.url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        864,
+        224
+      ],
+      "id": "674ed92b-a333-4507-8b98-a7e6215bd9e3",
+      "name": "Salvar no Sheets",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "R7eJctFvUeUG8VW8",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "{{GROQ_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Recebi 100 pokémons da PokeAPI e salvei no Google Sheets. Gere um resumo curto confirmando que tudo ocorreu com sucesso.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "a8ea623d-d33e-4126-8d9f-489384a30a86",
+      "name": "Resumo com IA",
+      "executeOnce": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Buscar Pokémons": {
+      "main": [
+        [
+          {
+            "node": "Separar Itens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Itens": {
+      "main": [
+        [
+          {
+            "node": "Filtrar por letra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar por letra": {
+      "main": [
+        [
+          {
+            "node": "Limpar Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Limpar Planilha": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Sheets": {
+      "main": [
+        [
+          {
+            "node": "Resumo com IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendamento (1 min)": {
+      "main": [
+        [
+          {
+            "node": "Buscar Pokémons",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d65c3a0d-e305-4435-a2cb-f9b10396782f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9dda3a79d38057bef830823f2081d6c4296828e0916a912a19f8fa72ec445665"
+  },
+  "id": "smhQynqHjJbIA9JO",
+  "tags": []
+}
